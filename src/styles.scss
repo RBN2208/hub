@@ -1,0 +1,36 @@
+@use "reset";
+
+.button {
+  display: flex;
+  border: 1px solid black;
+  padding: 8px;
+  &:hover {
+    background-color: black;
+    color: white;
+  }
+}
+
+.defaultAnchor {
+
+}
+
+.highlightAnchor {
+  color: #30309b;
+  text-decoration: underline;
+  &:hover {
+    text-shadow: 0.5px 0 #30309b;
+  }
+}
+
+.subNavigation {
+  border: 1px solid red;
+}
+
+// utils
+.selfEnd {
+  align-self: flex-end;
+}
+
+.selfStart {
+  align-self: flex-start;
+}
