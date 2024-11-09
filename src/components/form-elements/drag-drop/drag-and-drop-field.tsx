@@ -1,11 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { Logger } from '../../../lib/utils';
 
 interface DragAndDropProps {
   onFilesSelected: (files: File[]) => void;
+  imagesFromUploadState: string[] | []
 }
 
-export function DragAndDrop({ onFilesSelected }: React.FC<DragAndDropProps>) {
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
+export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC<DragAndDropProps>) {
+  const [previewImages, setPreviewImages] = useState<string[]>(imagesFromUploadState);
   const [dragging, setDragging] = useState(false);
 
   const previewImageRef = useRef<HTMLInputElement>(null);
@@ -31,68 +34,94 @@ export function DragAndDrop({ onFilesSelected }: React.FC<DragAndDropProps>) {
     event.stopPropagation();
   };
 
+  const filterAndCreatePreviews = (files: File[]): { jpgFiles: File[]; previews: string[] } => {
+    const jpgFiles = files.filter((file) =>
+      ['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)
+    );
+
+    const previews = jpgFiles.map((file) => URL.createObjectURL(file));
+    Logger.log("Files filtered for JPG/PNG -> ", jpgFiles);
+    Logger.log("Image Previews -> ", previews);
+    return { jpgFiles, previews };
+  };
+
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
     setDragging(false);
 
     const files = Array.from(event.dataTransfer.files);
-    const jpgFiles = files.filter((file) => {
-      if (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/png') {
-        return file
-      }
-    });
+    Logger.log("Files dropped -> ", files);
+    const { jpgFiles, previews } = filterAndCreatePreviews(files);
 
-    console.log(jpgFiles)
-
-    // Vorschau erstellen
-    const previews = jpgFiles.map((file) => URL.createObjectURL(file));
     setPreviewImages(previews);
-    // Rückgabe der Dateien
     onFilesSelected(jpgFiles);
   };
 
+  const manualUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const { jpgFiles, previews } = filterAndCreatePreviews(files);
+
+    setPreviewImages(previews);
+    onFilesSelected(jpgFiles);
+  }
+
+  useEffect(() => {
+    console.log(imagesFromUploadState)
+    setPreviewImages(imagesFromUploadState);
+  }, [imagesFromUploadState]);
+
   return (
-    <div
+    <DragWindow
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onClick={triggerUpload}
-      style={{
-        border: dragging ? '2px dashed #4a90e2' : '2px dashed #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        textAlign: 'center',
-        color: '#555',
-        cursor: 'pointer',
-        backgroundColor: dragging ? '#f0f8ff' : '#f9f9f9'
-      }}
+      onKeyUp={(e) => e.key === 'Enter' && triggerUpload()}
+      tabIndex={0}
+      role={'button'}
+      $dragging={dragging}
     >
-      <p>Ziehe deine JPG-Dateien hierhin oder klicke, um sie auszuwählen</p>
+      <p>Bilder hier ablegen oder anklicken, um diese hochzuladen</p>
       <input
         ref={previewImageRef}
         type="file"
         accept="image/jpeg, image/png"
         multiple
         style={{ display: 'none' }}
-        onChange={(e) => {
-          const files = Array.from(e.target.files || []);
-          const jpgFiles = files.filter(
-            (file) => file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/png'
-          );
-
-          const previews = jpgFiles.map((file) => URL.createObjectURL(file));
-          setPreviewImages(previews);
-
-          onFilesSelected(jpgFiles);
-        }}
+        onChange={manualUpload}
       />
-      <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        {previewImages.map((src, index) => (
-          <img key={index} src={src} alt="preview" style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
+      <PreviewImageWrapper>
+        {previewImages && previewImages.map((src, index) => (
+          <PreviewImage key={index}
+               src={src}
+               alt="preview"
+          />
         ))}
-      </div>
-    </div>
+      </PreviewImageWrapper>
+    </DragWindow>
   );
-};
+}
+
+const PreviewImageWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+`
+
+const PreviewImage = styled.img`
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+`
+
+const DragWindow = styled.div`
+  background-color: ${({$dragging}) => $dragging ? "#f0f8ff" : "#f9f9f9"};
+  border: ${({$dragging}) => $dragging ? '2px dashed #4a90e2' : '1px dashed #000'};
+  padding: 20px;
+  text-align: center;
+  color: #000;
+  cursor: pointer;
+`

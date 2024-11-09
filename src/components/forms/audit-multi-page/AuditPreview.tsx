@@ -7,6 +7,7 @@ import { Table } from '../../custom/table/table';
 import ContentWrapper from '../../layout/contentWrapper';
 import Heading from '../../common/heading/heading';
 import Button from '../../common/button';
+import docxConverter from '../../../lib/word-convertion';
 
 export default function AuditPreviewForm() {
   const { criteriaData, generalData } = useWCAGStore();
@@ -42,6 +43,10 @@ export default function AuditPreviewForm() {
     Logger.log("Convert to Json -> ", '\n', filename, '\n', asJson);
 
     downloadJson(asJson, filename)
+  }
+
+  const convertToWord = () => {
+      docxConverter(generalData, criteriaData)
   }
 
   const downloadJson = (jsonData, filename) => {
@@ -82,7 +87,7 @@ export default function AuditPreviewForm() {
     <div>
       <PreviewActions>
         <Button label="Download JSON" onclick={convertToJson} />
-        <Button label="Download Word" onclick={() => console.log("Download Word")} />
+        <Button label="Download Word" onclick={convertToWord} />
       </PreviewActions>
 
       <ContentWrapper>

@@ -1,4 +1,13 @@
-import { WCAGAuditFormTypeList } from '../types/types';
+import { GeneralAuditFormType, WCAGAuditFormTypeList } from '../types/types';
+
+export const GENERAL_AUDIT_FORM_TYPE_LABELS: GeneralAuditFormType = {
+  customer: "Kunde",
+  projectName: "Projektname",
+  module: "Seite / Modul",
+  version: "Version",
+  conformance: "Konformitätslevel",
+  miscellaneous: "Sonstiges"
+}
 
 export const WCAG: WCAGAuditFormTypeList = [
   {

@@ -3,7 +3,7 @@ import { WCAGAuditFormType } from '../../../types/types';
 import styled from 'styled-components';
 import { Divider } from '../../../global-styles';
 import { useWCAGStore } from '../../../store/store';
-import { noop } from '../../../lib/utils';
+import { noop, toBase64 } from '../../../lib/utils';
 import ContentWrapper from '../../layout/contentWrapper';
 import Heading from '../../common/heading/heading';
 import TextInput from '../../form-elements/input/textinput';
@@ -50,8 +50,13 @@ export default function AuditFormBlock({ criteria }: ReportEntryFormProps) {
     updateCriteria(criteria.name, { checkedStatus: value });
   }
 
-  const handleFilesSelected = (files: File[]) => {
-    console.log("Ausgewählte Dateien:", files);
+  const handleFilesSelected = async (files: File[]) => {
+    const newImages = [];
+    for (let i = 0; i < files.length; i++) {
+      const base64 = await toBase64(files[i]);
+      newImages.push(base64);
+    }
+    updateCriteria(criteria.name, {uploads: newImages});
   }
 
   return (
@@ -82,7 +87,7 @@ export default function AuditFormBlock({ criteria }: ReportEntryFormProps) {
         <CKEditorWrapper getRichTextData={handleFindingsChange}
                          value={criteria.findings || ""}
         />
-        <DragAndDrop onFilesSelected={handleFilesSelected}/>
+        <DragAndDrop onFilesSelected={handleFilesSelected} imagesFromUploadState={criteria.uploads || []}/>
       </ContentWrapper>
     </CriteriaEntryForm>
   )
