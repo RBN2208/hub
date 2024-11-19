@@ -19,6 +19,9 @@ export default function AuditFormBlock({ criteria }: ReportEntryFormProps) {
   const labelToId = criteria.name.toLowerCase().split(' ').join('-');
   const { updateCriteria } = useWCAGStore();
 
+  // image to base64 creates to big strings which overload localstorage. disable until better variant, cloudinary?
+  const enableDragAndDrop = false;
+
   const checkedOptions = [
     {
       label: "Bitte auswählen",
@@ -87,7 +90,7 @@ export default function AuditFormBlock({ criteria }: ReportEntryFormProps) {
         <CKEditorWrapper getRichTextData={handleFindingsChange}
                          value={criteria.findings || ""}
         />
-        <DragAndDrop onFilesSelected={handleFilesSelected} imagesFromUploadState={criteria.uploads || []}/>
+        {enableDragAndDrop && <DragAndDrop onFilesSelected={handleFilesSelected} imagesFromUploadState={criteria.uploads || []}/>}
       </ContentWrapper>
     </CriteriaEntryForm>
   )

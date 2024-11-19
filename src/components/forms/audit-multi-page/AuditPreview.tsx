@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useWCAGStore } from '../../../store/store';
 import { MergedAuditState } from '../../../types/types';
-import { Logger } from '../../../lib/utils';
+import { convertToJson, Logger } from '../../../lib/utils';
 import { Table } from '../../custom/table/table';
 import ContentWrapper from '../../layout/contentWrapper';
 import Heading from '../../common/heading/heading';
@@ -35,13 +35,8 @@ export default function AuditPreviewForm() {
     }));
   }
 
-  const convertToJson = () => {
-    const mergedData: MergedAuditState = { general: generalData, criterias: criteriaData };
-    Logger.log("Merge Form Data -> ", '\n', mergedData, '\n', "Next: Convert to Json");
-    const asJson = JSON.stringify(mergedData, null, 2)
-    const filename = generalData.projectName.split(' ').join('-');
-    Logger.log("Convert to Json -> ", '\n', filename, '\n', asJson);
-
+  const handleDownloadJson = () => {
+    const {asJson, filename} = convertToJson(generalData, criteriaData)
     downloadJson(asJson, filename)
   }
 
@@ -86,7 +81,7 @@ export default function AuditPreviewForm() {
   return (
     <div>
       <PreviewActions>
-        <Button label="Download JSON" onclick={convertToJson} />
+        <Button label="Download JSON" onclick={handleDownloadJson} />
         <Button label="Download Word" onclick={convertToWord} />
       </PreviewActions>
 

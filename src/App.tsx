@@ -28,6 +28,27 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+
+
+  // temp to log localStorage space to measure full audit
+  function getLocalStorageSize() {
+    let total = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        total += localStorage.getItem(key).length + key.length;
+      }
+    }
+    return total * 2;
+  }
+
+  function getRemainingLocalStorage() {
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    const used = getLocalStorageSize();
+    return maxSize - used;
+  }
+
+  console.log(`localstorage space: ${getRemainingLocalStorage() / 1024} KB`);
+
   return (
     <>
       <Header />

@@ -74,3 +74,13 @@ ul, ol {
 li {
   list-style-type: none;
 }
+
+.ck-content {
+  ul, ol {
+    margin: inherit;
+    padding-left: 20px;
+  }
+  li {
+    list-style-type: inherit;
+  }
+}

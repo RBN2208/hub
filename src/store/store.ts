@@ -11,9 +11,17 @@ const initialGeneralData: GeneralAuditFormType = {
   miscellaneous: ""
 };
 
+function getInitialData(key: string) {
+  const storageData = JSON.parse(localStorage.getItem('audit'));
+  if (storageData) {
+    return storageData[key]
+  }
+  return null
+}
+
 export const useWCAGStore = create((set) => ({
-  criteriaData: WCAG,
-  generalData: initialGeneralData,
+  criteriaData: getInitialData('criterias') !== null ? getInitialData('criterias') : WCAG,
+  generalData: getInitialData('general') !== null ? getInitialData('general') : initialGeneralData,
   updateCriteria: (name: string, updates: Partial<Pick<WCAGAuditFormType, 'findings' | 'uploads' | 'checkedStatus'>>) => {
     set((state) => ({
       criteriaData: state.criteriaData.map((criterion) => {

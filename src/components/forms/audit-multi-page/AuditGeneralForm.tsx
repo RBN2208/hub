@@ -94,7 +94,7 @@ export default function AuditGeneralForm() {
     <div>
       <ContentWrapper>
         <ContentWrapper>
-          <Button label="Report hochladen" onclick={triggerUpload} />
+          <UploadButton label="Report hochladen" onclick={triggerUpload} />
           <FileUpload type="file" accept="application/json" ref={fileInputRef} onChange={uploadJson} />
         </ContentWrapper>
 
@@ -136,6 +136,10 @@ export default function AuditGeneralForm() {
     </div>
   )
 }
+
+const UploadButton = styled(Button)`
+  width: max-content;
+`
 
 const FileUpload = styled.input`
   visibility: hidden;

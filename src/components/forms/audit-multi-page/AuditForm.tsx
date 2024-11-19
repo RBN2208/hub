@@ -4,17 +4,20 @@ import { useWCAGStore } from '../../../store/store';
 import Button from '../../common/button';
 import AuditFormBlock from './AuditFormBlock';
 import Select from '../../form-elements/select/select';
+import { convertToJson } from '../../../lib/utils';
 
 export default function AuditForm() {
-  const { criteriaData } = useWCAGStore();
-  const [activeIndex, setActiveIndex] = useState(0);  // Track the index of the active criterion
-  const [filterValue, setFilterValue] = useState("");  // Track the index of the active criterion
+  const { criteriaData, generalData } = useWCAGStore();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [filterValue, setFilterValue] = useState("");
 
   const next = () => {
     setActiveIndex((prevIndex) => {
       const newIndex = prevIndex + 1;
       return newIndex < criteriaData.length ? newIndex : 0;
     });
+    const {asJson} = convertToJson(generalData, criteriaData);
+    localStorage.setItem('audit', asJson)
   }
 
   const prev = () => {

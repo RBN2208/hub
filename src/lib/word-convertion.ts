@@ -153,9 +153,7 @@ function createCriteriaTable(criteria: WCAGAuditFormType): Table {
       new TableRow({
         children: [
           new TableCell({
-            children: [
-              createParagraph(criteria.findings || '')
-            ],
+            children: createRichTextFromHTML(criteria.findings || ''),
             margins: {
               top: 50,
               right: 100,
@@ -215,4 +213,94 @@ function createCriteriaTable(criteria: WCAGAuditFormType): Table {
       }),
     ],
   });
+}
+
+function createRichTextFromHTML(htmlString: string): Paragraph[] {
+  const container = document.createElement("div");
+  container.innerHTML = htmlString;
+
+  const elements = container.childNodes;
+
+  const paragraphs: Paragraph[] = [];
+  elements.forEach((element) => {
+    if (element.nodeType === 1) { // Element-Knoten
+      const tag = (element as HTMLElement).tagName.toLowerCase();
+
+      switch (tag) {
+        case "h2":
+        case "h3":
+        case "h4":
+          paragraphs.push(
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: (element as HTMLElement).textContent || "",
+                  bold: (element as HTMLElement).innerHTML.includes('<strong>'),
+                  italics: (element as HTMLElement).innerHTML.includes('<i>'),
+                  color: extractColorFromHTML(element.innerHTML)
+                })
+              ],
+              heading: tag === "h2" ? HeadingLevel.HEADING_2 : tag === "h3" ? HeadingLevel.HEADING_3 : HeadingLevel.HEADING_4,
+            })
+          );
+          break;
+
+        case "p":
+          paragraphs.push(
+            formattedParagraph(element as HTMLElement)
+          );
+          break;
+
+        case "ul":
+        case "ol":
+          paragraphs.push(...createList(element as HTMLElement));
+          break;
+
+        default:
+          break;
+      }
+    }
+  });
+
+  return paragraphs;
+}
+
+function formattedParagraph(el: HTMLElement): Paragraph {
+  const element = el as HTMLElement
+  const isBold = element.innerHTML.includes('<strong>');
+  const isItalic = element.innerHTML.includes('<i>');
+  const fontColor = extractColorFromHTML(element.innerHTML); // color or black
+
+  return new Paragraph({
+    children: [
+      new TextRun({
+        text: element.textContent || "",
+        bold: isBold,
+        italics: isItalic,
+        color: fontColor
+      })
+    ]
+  })
+}
+
+function createList(element: HTMLElement): Paragraph[] {
+  const listItems: Paragraph[] = [];
+  element.childNodes.forEach((child) => {
+    if (child.nodeType === 1 && (child as HTMLElement).tagName.toLowerCase() === "li") {
+      listItems.push(
+        new Paragraph({
+          text: (child as HTMLElement).textContent || "",
+          bullet: { level: 0 }
+        })
+      );
+    }
+  });
+
+  return listItems;
+}
+
+function extractColorFromHTML(htmlString: string): string {
+  const colorRegex = /style=["'][^"']*color:\s*(#[0-9a-fA-F]{3,6})[^"']*["']/;
+  const match = htmlString.match(colorRegex);
+  return match ? match[1] : '#000000';
 }
