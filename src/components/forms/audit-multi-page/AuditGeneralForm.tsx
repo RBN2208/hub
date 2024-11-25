@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { MergedAuditState, WCAGAuditFormType } from '../../../types/types';
+import React, { useRef } from 'react';
+import { MergedAuditState } from '../../../types/types';
 import styled from 'styled-components';
 import { useWCAGStore } from '../../../store/store';
 import { Logger } from '../../../lib/utils';
@@ -58,11 +58,11 @@ export default function AuditGeneralForm() {
     }
   ]
 
-  const handleVersionChange = (key: 'version', value:  Partial<Pick<WCAGAuditFormType, 'version'>>) => {
+  const handleVersionChange = (key: 'version', value: string) => {
     updateGeneral(key, value);
   }
 
-  const handleTargetChange = (key: 'conformance', value: Partial<Pick<WCAGAuditFormType, 'level'>>) => {
+  const handleTargetChange = (key: 'conformance', value: string) => {
     updateGeneral(key, value);
   }
 

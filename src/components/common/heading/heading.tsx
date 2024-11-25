@@ -9,30 +9,35 @@ interface HeadingProps {
 }
 
 const StyledHeading1 = styled.h1`
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin: 0;
-`
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+`;
 
 const StyledHeading2 = styled.h2`
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin: 0;
-`
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+`;
 
 const StyledHeading3 = styled.h3`
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 0;
-`
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+`;
 
 const StyledHeading4 = styled.h4`
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin: 0;
-`
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin: 0;
+`;
 
-const RenderedHeading = ({level = "2", children}) => {
+interface RenderedHeadingProps {
+  level: HeadingLevelType;
+  children: React.ReactNode;
+}
+
+const RenderedHeading: React.FC<RenderedHeadingProps> = ({ level = '2', children }) => {
   switch (level) {
     case '1':
       return <StyledHeading1>{children}</StyledHeading1>;
@@ -41,11 +46,11 @@ const RenderedHeading = ({level = "2", children}) => {
     case '3':
       return <StyledHeading3>{children}</StyledHeading3>;
     case '4':
-      return <StyledHeading4>{children}</StyledHeading4>
+      return <StyledHeading4>{children}</StyledHeading4>;
     default:
       return <StyledHeading2>{children}</StyledHeading2>;
   }
-}
+};
 
 export default function Heading({ level, children }: HeadingProps) {
   return <RenderedHeading level={level}>{children}</RenderedHeading>;

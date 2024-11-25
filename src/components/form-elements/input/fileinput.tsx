@@ -1,6 +1,5 @@
-import React, { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import styled from 'styled-components';
-import { StyledInputBase } from '../../../global-styles';
 
 interface InputProps {
   callback: (value: string) => void;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import {
   ClassicEditor,
@@ -25,7 +25,8 @@ interface CKEditorWrapperProps {
 export default function CKEditorWrapper({ getRichTextData, value }: CKEditorWrapperProps) {
   const editorRef = useRef<any>(null);
 
-  const handleChange = (info: any, data: any) => {
+  // ts-ignore
+  const handleChange = (data: any) => {
     getRichTextData && getRichTextData(data.data.get());
   }
 
@@ -71,7 +72,7 @@ export default function CKEditorWrapper({ getRichTextData, value }: CKEditorWrap
           editorRef.current = { editor };
           editor.setData(value || '');
         }}
-        onBlur={(info, data) => handleChange(info, data)}
+        onBlur={(_, data) => handleChange(data)}
       />
     </CKEditorWrapperContainer>
   );

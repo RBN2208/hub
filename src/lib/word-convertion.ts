@@ -53,7 +53,7 @@ function createGeneralInfoTable(generalData: GeneralAuditFormType): Table {
       children: [
         new TableCell({
           children: [
-            createParagraph(GENERAL_AUDIT_FORM_TYPE_LABELS[key])
+            createParagraph(GENERAL_AUDIT_FORM_TYPE_LABELS[key as keyof typeof GENERAL_AUDIT_FORM_TYPE_LABELS] || '')
           ],
           width: { size: 50, type: WidthType.PERCENTAGE }
         }),
@@ -225,7 +225,8 @@ function createRichTextFromHTML(htmlString: string): Paragraph[] {
   const paragraphs: Paragraph[] = [];
   elements.forEach((element) => {
     if (element.nodeType === 1) { // Element-Knoten
-      const tag = (element as HTMLElement).tagName.toLowerCase();
+      const el = element as HTMLElement;
+      const tag = el.tagName.toLowerCase();
 
       switch (tag) {
         case "h2":
@@ -238,7 +239,7 @@ function createRichTextFromHTML(htmlString: string): Paragraph[] {
                   text: (element as HTMLElement).textContent || "",
                   bold: (element as HTMLElement).innerHTML.includes('<strong>'),
                   italics: (element as HTMLElement).innerHTML.includes('<i>'),
-                  color: extractColorFromHTML(element.innerHTML)
+                  color: extractColorFromHTML((element as HTMLElement).innerHTML)
                 })
               ],
               heading: tag === "h2" ? HeadingLevel.HEADING_2 : tag === "h3" ? HeadingLevel.HEADING_3 : HeadingLevel.HEADING_4,
@@ -321,3 +322,4 @@ function extractColorFromHTML(htmlString: string): string {
   const match = htmlString.match(colorRegex);
   return match ? match[1] : '#000000';
 }
+

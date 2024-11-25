@@ -1,7 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default function SectionWrapper({children}: React.ReactNode) {
+type SectionWrapperType = {
+  children: React.ReactNode
+}
+export default function SectionWrapper({children}: SectionWrapperType) {
   return (
     <SectionOuter>
       <SectionInner>

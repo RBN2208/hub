@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { useWCAGStore } from '../../../store/store';
 import { convertToJson, Logger } from '../../../lib/utils';
@@ -7,75 +7,62 @@ import ContentWrapper from '../../layout/contentWrapper';
 import Heading from '../../common/heading/heading';
 import Button from '../../common/button';
 import docxConverter from '../../../lib/word-convertion';
+import { WCAGAuditFormType } from '../../../types/types';
+
+type Categories = 'Perceivable' | 'Operable' | 'Understandable' | 'Robust';
 
 export default function AuditPreviewForm() {
   const { criteriaData, generalData } = useWCAGStore();
-  const [expandedCategories, setExpandedCategories] = useState({
+  const [expandedCategories, setExpandedCategories] = useState<Record<Categories, boolean>>({
     Perceivable: false,
     Operable: false,
     Understandable: false,
-    Robust: false
+    Robust: false,
   });
 
-  // Group the criteria data by category
-  const groupedCriteria = criteriaData.reduce((groups, criteria) => {
+  const groupedCriteria: { [key: string]: WCAGAuditFormType[] } = criteriaData.reduce((groups, criteria) => {
     const category = criteria.category;
     if (!groups[category]) {
       groups[category] = [];
     }
     groups[category].push(criteria);
     return groups;
-  }, {});
+  }, {} as { [key: string]: WCAGAuditFormType[] });
 
-  const toggleCategory = (category) => {
-    setExpandedCategories(prev => ({
+  const toggleCategory = (category: Categories) => {
+    setExpandedCategories((prev) => ({
       ...prev,
-      [category]: !prev[category]
+      [category]: !prev[category],
     }));
-  }
+  };
 
   const handleDownloadJson = () => {
-    const {asJson, filename} = convertToJson(generalData, criteriaData)
-    downloadJson(asJson, filename)
-  }
+    const { asJson, filename } = convertToJson(generalData, criteriaData);
+    downloadJson(asJson, filename);
+  };
 
   const convertToWord = () => {
-      docxConverter(generalData, criteriaData)
-  }
+    docxConverter(generalData, criteriaData);
+  };
 
-  const downloadJson = (jsonData, filename) => {
+  const downloadJson = (jsonData: string, filename: string) => {
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    Logger.log("Blob and URL created -> ", blob, url)
+    Logger.log('Blob and URL created -> ', blob, url);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename || "accessibility-report";
+    a.download = filename || 'accessibility-report';
     a.click();
     URL.revokeObjectURL(url);
-  }
+  };
 
   const generalTable = [
-    {
-      key: "Projektname",
-      value: generalData.projectName
-    },
-    {
-      key: "Kunde",
-      value: generalData.customer
-    },
-    {
-      key: "Version",
-      value: generalData.version
-    },
-    {
-      key: "Konformitätsstufe",
-      value: generalData.conformance
-    },
-    {
-      key: "Sonstiges",
-      value: generalData.miscellaneous
-    },
-  ]
+    { key: 'Projektname', value: generalData.projectName },
+    { key: 'Kunde', value: generalData.customer },
+    { key: 'Version', value: generalData.version },
+    { key: 'Konformitätsstufe', value: generalData.conformance },
+    { key: 'Sonstiges', value: generalData.miscellaneous },
+  ];
 
   return (
     <div>
@@ -91,24 +78,27 @@ export default function AuditPreviewForm() {
       {['Perceivable', 'Operable', 'Understandable', 'Robust'].map((category) => (
         <div key={category}>
           <Heading level="2">
-            <Button label={category}
-                    onclick={() => toggleCategory(category)}
-                    style={{ width: '100%'}}
+            <ToggleButton
+              label={category}
+              onclick={() => toggleCategory(category as Categories)}
             />
           </Heading>
-
-          {expandedCategories[category] && (
+          {expandedCategories[category as Categories] && (
             <ExpandInner>
-              {groupedCriteria[category]?.map((criteria, index) => {
-                const findingsMarkup = { __html: criteria.findings };
-
+              {groupedCriteria[category]?.map((criteria: WCAGAuditFormType, index: number) => {
+                const findingsMarkup = { __html: criteria.findings || '' };
                 return (
                   <GroupedContent key={index}>
                     <ContentWrapper>
                       <Heading level="3">{criteria.guideLine}</Heading>
                       <Heading level="4">{criteria.name}</Heading>
-                      <p><strong>Status: </strong>{criteria.checkedStatus}</p>
-                      <p><strong>Bericht:</strong></p>
+                      <p>
+                        <strong>Status: </strong>
+                        {criteria.checkedStatus}
+                      </p>
+                      <p>
+                        <strong>Bericht:</strong>
+                      </p>
                       <div dangerouslySetInnerHTML={findingsMarkup}></div>
                     </ContentWrapper>
                   </GroupedContent>
@@ -122,10 +112,14 @@ export default function AuditPreviewForm() {
   );
 }
 
+const ToggleButton = styled(Button)`
+  width: 100%;
+`
+
 const GroupedContent = styled.div`
   padding: 20px;
   border: 1px solid black;
-`
+`;
 
 const ExpandInner = styled.div`
   display: flex;
@@ -134,10 +128,10 @@ const ExpandInner = styled.div`
   padding: 20px;
   border: 1px solid black;
   border-top: none;
-`
+`;
 
 const PreviewActions = styled.div`
   display: flex;
   gap: 20px;
   margin-bottom: 30px;
-`
+`;

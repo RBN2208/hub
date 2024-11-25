@@ -4,10 +4,10 @@ import { Logger } from '../../../lib/utils';
 
 interface DragAndDropProps {
   onFilesSelected: (files: File[]) => void;
-  imagesFromUploadState: string[] | []
+  imagesFromUploadState: string[] | [];
 }
 
-export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC<DragAndDropProps>) {
+export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: DragAndDropProps) {
   const [previewImages, setPreviewImages] = useState<string[]>(imagesFromUploadState);
   const [dragging, setDragging] = useState(false);
 
@@ -15,21 +15,21 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
 
   const triggerUpload = () => {
     previewImageRef.current?.click();
-  }
+  };
 
-  const handleDragEnter = (event: React.DragEvent) => {
+  const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragging(true);
   };
 
-  const handleDragLeave = (event: React.DragEvent) => {
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragging(false);
   };
 
-  const handleDragOver = (event: React.DragEvent) => {
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
   };
@@ -40,18 +40,18 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
     );
 
     const previews = jpgFiles.map((file) => URL.createObjectURL(file));
-    Logger.log("Files filtered for JPG/PNG -> ", jpgFiles);
-    Logger.log("Image Previews -> ", previews);
+    Logger.log('Files filtered for JPG/PNG -> ', jpgFiles);
+    Logger.log('Image Previews -> ', previews);
     return { jpgFiles, previews };
   };
 
-  const handleDrop = (event: React.DragEvent) => {
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragging(false);
 
     const files = Array.from(event.dataTransfer.files);
-    Logger.log("Files dropped -> ", files);
+    Logger.log('Files dropped -> ', files);
     const { jpgFiles, previews } = filterAndCreatePreviews(files);
 
     setPreviewImages(previews);
@@ -64,7 +64,7 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
 
     setPreviewImages(previews);
     onFilesSelected(jpgFiles);
-  }
+  };
 
   useEffect(() => {
     setPreviewImages(imagesFromUploadState);
@@ -72,6 +72,7 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
 
   return (
     <DragWindow
+      $dragging={dragging}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -79,8 +80,7 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
       onClick={triggerUpload}
       onKeyUp={(e) => e.key === 'Enter' && triggerUpload()}
       tabIndex={0}
-      role={'button'}
-      $dragging={dragging}
+      role="button"
     >
       <p>Bilder hier ablegen oder anklicken, um diese hochzuladen</p>
       <input
@@ -92,12 +92,10 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
         onChange={manualUpload}
       />
       <PreviewImageWrapper>
-        {previewImages && previewImages.map((src, index) => (
-          <PreviewImage key={index}
-               src={src}
-               alt="preview"
-          />
-        ))}
+        {previewImages &&
+          previewImages.map((src, index) => (
+            <PreviewImage key={index} src={src} alt="preview" />
+          ))}
       </PreviewImageWrapper>
     </DragWindow>
   );
@@ -108,19 +106,19 @@ const PreviewImageWrapper = styled.div`
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 10px;
-`
+`;
 
 const PreviewImage = styled.img`
   width: 100px;
   height: 100px;
   object-fit: cover;
-`
+`;
 
-const DragWindow = styled.div`
-  background-color: ${({$dragging}) => $dragging ? "#f0f8ff" : "#f9f9f9"};
-  border: ${({$dragging}) => $dragging ? '2px dashed #4a90e2' : '1px dashed #000'};
+const DragWindow = styled.div<{ $dragging: boolean }>`
+  background-color: ${({ $dragging }) => ($dragging ? '#f0f8ff' : '#f9f9f9')};
+  border: ${({ $dragging }) => ($dragging ? '2px dashed #4a90e2' : '1px dashed #000')};
   padding: 20px;
   text-align: center;
   color: #000;
   cursor: pointer;
-`
+`;

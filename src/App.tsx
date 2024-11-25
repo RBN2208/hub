@@ -1,5 +1,4 @@
 import './styles.scss';
-import React from 'react';
 import Header from './components/common/header';
 import Main from './components/common/main';
 import Footer from './components/common/footer';
@@ -35,7 +34,8 @@ function App() {
     let total = 0;
     for (let key in localStorage) {
       if (localStorage.hasOwnProperty(key)) {
-        total += localStorage.getItem(key).length + key.length;
+        const item = localStorage.getItem(key);
+        total += (item ? item.length : 0) + key.length;
       }
     }
     return total * 2;

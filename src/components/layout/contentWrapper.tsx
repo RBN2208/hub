@@ -38,8 +38,9 @@ const ContentOuter = styled.div`
   gap: 20px;
 `
 
-const ContentChildren = styled.div`
+const ContentChildren = styled.div<{ $row: boolean }>`
   display: flex;
   gap: 20px;
-  flex-direction: ${({$row}) => $row ? "row" : "column"};
-`
+  flex-direction: ${({ $row }) => ($row ? "row" : "column")};
+`;
+

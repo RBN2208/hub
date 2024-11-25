@@ -12,11 +12,12 @@ const initialGeneralData: GeneralAuditFormType = {
 };
 
 function getInitialData(key: string) {
-  const storageData = JSON.parse(localStorage.getItem('audit'));
+  const storageData = localStorage.getItem('audit');
   if (storageData) {
-    return storageData[key]
+    const parsedData = JSON.parse(storageData);
+    return parsedData[key];
   }
-  return null
+  return null;
 }
 
 interface WCAGStoreState {
@@ -60,7 +61,7 @@ export const useWCAGStore = create<WCAGStoreState>((set) => ({
       criteriaData: criterias
     }))
   },
-  updateGeneral: (key: keyof typeof initialGeneralData, value: Partial<Pick<WCAGAuditFormType, 'level' | 'version'>>) => {
+  updateGeneral: (key: keyof typeof initialGeneralData, value: string) => {
     set((state: WCAGStoreState) => ({
       generalData: {
         ...state.generalData,

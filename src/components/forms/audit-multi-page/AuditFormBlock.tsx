@@ -1,4 +1,3 @@
-import React  from 'react';
 import { WCAGAuditFormType } from '../../../types/types';
 import styled from 'styled-components';
 import { Divider } from '../../../global-styles';

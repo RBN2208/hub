@@ -15,7 +15,7 @@ export const WCAG: WCAGAuditFormTypeList = [
     guideLine: 'Guideline 1.1 – Text Alternatives',
     name: '1.1.1 Non-text Content',
     level: 'A',
-    reference: 'https://www.w3.org/WAI/WCAG22/quickref/#non-text-content'
+    reference: 'https://www.w3.org/WAI/WCAG22/quickref/#non-text-content',
   },
   {
     category: "Perceivable",
