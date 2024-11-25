@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useWCAGStore } from '../../../store/store';
 import Button from '../../common/button';
 import AuditFormBlock from './AuditFormBlock';
 import Select from '../../form-elements/select/select';
-import { convertToJson } from '../../../lib/utils';
+import { convertToJson, Logger } from '../../../lib/utils';
 
 export default function AuditForm() {
   const { criteriaData, generalData } = useWCAGStore();
@@ -16,8 +16,6 @@ export default function AuditForm() {
       const newIndex = prevIndex + 1;
       return newIndex < criteriaData.length ? newIndex : 0;
     });
-    const {asJson} = convertToJson(generalData, criteriaData);
-    localStorage.setItem('audit', asJson)
   }
 
   const prev = () => {
@@ -25,7 +23,6 @@ export default function AuditForm() {
       const newIndex = prevIndex - 1;
       return newIndex >= 0 ? newIndex : criteriaData.length - 1;
     });
-    console.log(criteriaData)
   }
 
   const changeOnSelect = (value: string) => {
@@ -36,13 +33,22 @@ export default function AuditForm() {
     }
   }
 
-  const mappedCriteria = criteriaData.map((criteriaData, index) => {
-    return {
-      value: criteriaData.name,
-      label: criteriaData.name,
-      selected: index === activeIndex
-    }
-  })
+  const mappedCriteria = criteriaData.map((criteria, index) => ({
+      value: criteria.name,
+      label: criteria.name,
+      selected: index === activeIndex,
+    }));
+
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      Logger.log('##### Autosave #####');
+      const { asJson } = convertToJson(generalData, criteriaData);
+      localStorage.setItem('audit', asJson);
+    }, 30000);
+
+    return () => clearInterval(intervalId);
+  }, [generalData, criteriaData])
 
   return (
     <>
@@ -59,8 +65,9 @@ export default function AuditForm() {
                 onSelect={(value) => changeOnSelect(value)}
         />
       </FilterContainer>
-
-      <AuditFormBlock criteria={criteriaData[activeIndex]} />
+      {criteriaData.length > 0 && criteriaData[activeIndex] && (
+        <AuditFormBlock criteria={criteriaData[activeIndex]} />
+      )}
     </>
   )
 }

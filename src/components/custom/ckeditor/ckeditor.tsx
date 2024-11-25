@@ -10,7 +10,8 @@ import {
   Undo,
   Heading,
   FontColor,
-  List
+  List,
+  HtmlEmbed
 } from 'ckeditor5';
 
 import 'ckeditor5/ckeditor5.css';
@@ -44,10 +45,10 @@ export default function CKEditorWrapper({ getRichTextData, value }: CKEditorWrap
         editor={ClassicEditor}
         config={{
           plugins: [
-            Bold, Essentials, Italic, Mention, Paragraph, Undo, Heading, FontColor, List
+            Bold, Essentials, Italic, Mention, Paragraph, Undo, Heading, FontColor, List, HtmlEmbed
           ],
           toolbar: {
-            items: ['undo', 'redo', '|', 'heading', 'bold', 'italic', 'fontColor', '|', 'bulletedList'],
+            items: ['undo', 'redo', '|', 'heading', 'bold', 'italic', 'fontColor', '|', 'bulletedList', '|', 'htmlEmbed'],
           },
           heading: {
             options: [

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { MergedAuditState } from '../../../types/types';
+import React, { useEffect, useRef } from 'react';
+import { MergedAuditState, WCAGAuditFormType } from '../../../types/types';
 import styled from 'styled-components';
 import { useWCAGStore } from '../../../store/store';
 import { Logger } from '../../../lib/utils';
@@ -10,7 +10,7 @@ import Textarea from '../../form-elements/textarea/textarea';
 import Button from '../../common/button';
 
 export default function AuditGeneralForm() {
-  const { generalData, updateGeneral, setStateFromUpload } = useWCAGStore();
+  const { generalData, updateGeneral, setStateFromUpload, resetState } = useWCAGStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const conformanceTarget = [
@@ -58,11 +58,11 @@ export default function AuditGeneralForm() {
     }
   ]
 
-  const handleVersionChange = (key: 'version' | 'conformance', value: string) => {
+  const handleVersionChange = (key: 'version', value:  Partial<Pick<WCAGAuditFormType, 'version'>>) => {
     updateGeneral(key, value);
   }
 
-  const handleTargetChange = (key: 'version' | 'conformance', value: string) => {
+  const handleTargetChange = (key: 'conformance', value: Partial<Pick<WCAGAuditFormType, 'level'>>) => {
     updateGeneral(key, value);
   }
 
@@ -75,7 +75,6 @@ export default function AuditGeneralForm() {
       reader.onload = (e) => {
         try {
           const jsonContent: MergedAuditState = JSON.parse(e.target?.result as string);
-          console.log(jsonContent)
           setStateFromUpload(jsonContent.general, jsonContent.criterias);
           Logger.log("Parsed json -> ", jsonContent);
         } catch (error) {
@@ -86,6 +85,11 @@ export default function AuditGeneralForm() {
     }
   }
 
+  const clearAudit = () => {
+    localStorage.removeItem('audit');
+    resetState();
+  }
+
   const triggerUpload = () => {
     fileInputRef.current?.click();
   }
@@ -93,40 +97,42 @@ export default function AuditGeneralForm() {
   return (
     <div>
       <ContentWrapper>
-        <ContentWrapper>
+        <ContentWrapper asRow={true}>
           <UploadButton label="Report hochladen" onclick={triggerUpload} />
           <FileUpload type="file" accept="application/json" ref={fileInputRef} onChange={uploadJson} />
+
+          <UploadButton label="Report löschen" onclick={clearAudit} />
         </ContentWrapper>
 
         <ContentWrapper>
-          <TextInput id="12"
+          <TextInput id="projectname"
                      value={generalData.projectName}
                      label="Projektbeschreibung"
                      callback={(value) => updateGeneral('projectName', value)}
           />
-          <TextInput id="12"
+          <TextInput id="customer"
                      value={generalData.customer}
                      label="Kunde"
                      callback={(value) => updateGeneral('customer', value)}
           />
-          <TextInput id="12"
+          <TextInput id="module"
                      value={generalData.module}
                      label="Website oder Modul"
                      callback={(value) => updateGeneral('module', value)}
           />
-          <Select id=""
+          <Select id="version"
                   label="Geprüfte WCAG Version"
                   options={wcagVersion}
                   value={generalData.version}
                   onSelect={(value) => handleVersionChange('version', value)}
           />
-          <Select id=""
+          <Select id="target"
                   label="Konformitätslevel"
                   options={conformanceTarget}
                   value={generalData.conformance}
                   onSelect={(value) => handleTargetChange('conformance', value)}
           />
-          <Textarea id=""
+          <Textarea id="misc"
                     label="Sonstiges"
                     value={generalData.miscellaneous}
                     callback={(value) => updateGeneral('miscellaneous', value)}

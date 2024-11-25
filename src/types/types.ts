@@ -17,6 +17,7 @@ export type WCAGAuditFormType = {
   guideLine: string,
   name: string,
   level: 'A' | 'AA' | 'AAA',
+  version: string,
   reference: string,
   findings?: string, // richtext data
   uploads?: string[], // base64 string of image

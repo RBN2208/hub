@@ -67,7 +67,6 @@ export function DragAndDrop({ onFilesSelected, imagesFromUploadState }: React.FC
   }
 
   useEffect(() => {
-    console.log(imagesFromUploadState)
     setPreviewImages(imagesFromUploadState);
   }, [imagesFromUploadState]);
 

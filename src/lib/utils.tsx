@@ -20,6 +20,7 @@ export function convertToJson(generalData, criteriaData): {asJson: any, filename
 
   return {asJson, filename}
 }
+
 export class Logger {
   private static isDebugMode: boolean = localStorage.getItem("DEBUG_MODE") === "true";
 

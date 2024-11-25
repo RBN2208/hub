@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useWCAGStore } from '../../../store/store';
-import { MergedAuditState } from '../../../types/types';
 import { convertToJson, Logger } from '../../../lib/utils';
 import { Table } from '../../custom/table/table';
 import ContentWrapper from '../../layout/contentWrapper';

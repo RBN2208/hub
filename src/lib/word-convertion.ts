@@ -66,6 +66,7 @@ function createGeneralInfoTable(generalData: GeneralAuditFormType): Table {
       ]
     })
   );
+  Logger.log('GeneralInfoTable, rows created', rows);
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -256,6 +257,21 @@ function createRichTextFromHTML(htmlString: string): Paragraph[] {
           paragraphs.push(...createList(element as HTMLElement));
           break;
 
+        case "div":
+          if ((element as HTMLElement).classList.contains('raw-html-embed')) {
+            paragraphs.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: (element as HTMLElement).innerHTML,
+                    font: "Arial"
+                  })
+                ]
+              })
+            )
+          }
+          break;
+
         default:
           break;
       }
@@ -277,7 +293,8 @@ function formattedParagraph(el: HTMLElement): Paragraph {
         text: element.textContent || "",
         bold: isBold,
         italics: isItalic,
-        color: fontColor
+        color: fontColor,
+        font: 'Arial'
       })
     ]
   })
@@ -290,7 +307,7 @@ function createList(element: HTMLElement): Paragraph[] {
       listItems.push(
         new Paragraph({
           text: (child as HTMLElement).textContent || "",
-          bullet: { level: 0 }
+          bullet: { level: 0 },
         })
       );
     }

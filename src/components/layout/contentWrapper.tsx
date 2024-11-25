@@ -6,11 +6,12 @@ export interface IntroArticleProps {
   headline?: string,
   description?: string
   children?: React.ReactNode,
-  headingLevel?: HeadingLevelType
+  headingLevel?: HeadingLevelType,
+  asRow?: boolean
 }
 
-export default function ContentWrapper({children, headline, description, headingLevel}: IntroArticleProps) {
-  const hLevel = headingLevel || "2"
+export default function ContentWrapper({children, headline, description, headingLevel, asRow = false}: IntroArticleProps) {
+  const hLevel = headingLevel || "2";
   return (
     <>
       <ContentOuter>
@@ -21,7 +22,7 @@ export default function ContentWrapper({children, headline, description, heading
           </div>
         }
         {children &&
-          <ContentChildren>
+          <ContentChildren $row={asRow}>
             {children}
           </ContentChildren>
         }
@@ -40,5 +41,5 @@ const ContentOuter = styled.div`
 const ContentChildren = styled.div`
   display: flex;
   gap: 20px;
-  flex-direction: column;
+  flex-direction: ${({$row}) => $row ? "row" : "column"};
 `
